@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 entry_points = {'console_scripts': ['little_deploy = little_deploy:main']}
@@ -13,7 +13,7 @@ setup(
     long_description=open("README.md").read(),
 
     # list of packages and data
-    packages=find_packages(),
+    py_modules=['little_deploy'],
 
     entry_points=entry_points,
 
