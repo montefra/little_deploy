@@ -45,7 +45,7 @@ def main(argv=None):
     args = parse(argv=argv)
 
     conf = ConfigParser(interpolation=ExtendedInterpolation())
-    if not conf.read(os.path.expanduser(argv.config_file)):
+    if not conf.read(os.path.expanduser(args.config_file)):
         print('Missing configuration file: deployment aborted')
         exit()
 
