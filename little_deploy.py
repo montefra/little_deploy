@@ -1,6 +1,9 @@
-#!/usr/bin/env python3
 """Script that deploys some files (typically documentation and/or coverage
 reports) to some directory
+
+The MIT License (MIT)
+
+Copyright (c) 2015 Francesco Montesano
 """
 
 from configparser import ConfigParser, ExtendedInterpolation
@@ -32,7 +35,7 @@ def parse(argv=None):
                    files''')
 
     p.add_argument('-c', '--config-file',
-                   default=os.path.join('~', '.config', "tox_deploy.cfg"),
+                   default=os.path.join('~', '.config', "little_deploy.cfg"),
                    help="Name of the configuration file")
 
     return p.parse_args(args=argv)
