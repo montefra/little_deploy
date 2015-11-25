@@ -32,8 +32,7 @@ def parse(argv=None):
                    files''')
 
     p.add_argument('-c', '--config-file',
-                   default=os.path.join(os.path.expanduser('~'), '.config',
-                                        "tox_deploy.cfg"),
+                   default=os.path.join('~', '.config', "tox_deploy.cfg"),
                    help="Name of the configuration file")
 
     return p.parse_args(args=argv)
@@ -43,7 +42,7 @@ def main(argv=None):
     args = parse(argv=argv)
 
     conf = ConfigParser(interpolation=ExtendedInterpolation())
-    if not conf.read(argv.config_file):
+    if not conf.read(os.path.expanduser(argv.config_file)):
         print('Missing configuration file: deployment aborted')
         exit()
 
