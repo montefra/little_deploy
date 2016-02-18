@@ -12,7 +12,7 @@ So why not having ``tox`` also copy the documentation and the report somewhere?
 
 Here it comes ``little_deploy``
 
-## How?
+## Usage
 
     usage: little_deploy [-h] [-c CONFIG_FILE] project type deploy_from
 
@@ -37,6 +37,49 @@ Here it comes ``little_deploy``
                             Name of the configuration file (default:
                             ~/.config/little_deploy.cfg)
 
+## Configuration
+
+``little_deploy`` is configuration driven. To be used for ``project`` the
+configuration file needs to have the corresponding section. To run for ``type``,
+the corresponding option must be present. ``type`` can be any string, except for
+a few reserved ones, described and commented in the following example
+
+    [project]
+    # section for the project
+
+    # the following options are directly handled by little_deploy and their
+    # names are reserved
+
+    # If present use it as the package name for the extraction of the version
+    # number, if the version is required. If not present the package name is
+    # assumed to be ``project``
+    pkg_name = 
+    # when using the version number: if the version is a release number allow
+    # overwriting the target directory if exists; default False
+    overwrite_releases = False
+    # when using the version number: if the version is a pre-release number
+    # allow overwriting the target directory if exists; default True
+    overwrite_dev = True
+    # when using the version number: if the version is a pre-release number
+    # and this option is given change the version name to the value of
+    # ``version_dev``; WARNING: setting this option and ``overwrite_dev`` to
+    # False can lead to unexpected results
+    version_dev = development
+
+    # types names
+    type = /path/to/where/the/type/must/be/deployed
+
+In the ``type`` value the following placeholders are expanded using [python
+format
+syntax](https://docs.python.org/3/library/string.html#custom-string-formatting)
+
+* ``{project}``: the project name
+* ``{type}``: the type of the files to deploy
+* ``{version}``: the version of the package; the version is extracted **only**
+  if this placeholder is present; the version is extracted using
+  [``pkg_resources``](https://pythonhosted.org/setuptools/pkg_resources.html)
+
+## Example
 
 Let's say that your project is called ``my_project`` and you want to move some
 file of a given ``type``, let's say some documentation, from a directory
@@ -62,7 +105,7 @@ in the configuration file:
     # this is the little_deploy configuration file
     [my_project]
     doc = /path/where/i/want/to/copy/{project}_{type_}
-    cover = ${doc}  # it uses extended interpolation
+    cover = ${doc}/{version}  # it uses extended interpolation
 
     [other_project]
 
