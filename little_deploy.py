@@ -86,17 +86,17 @@ def get_version(deploy_dir, conf):
                    ('{{version}}' not in deploy_dir) and
                    ('${version}' not in deploy_dir))
     version = None
-    allow_overwrite = True
+    allow_overwrite = False
 
     if has_version:
         pkg_name = conf['pkg_name']
         pversion = pkg_resources.get_distribution(pkg_name).parsed_version
         if pversion.is_prerelease or pversion.is_postrelease:
             version = conf.get('version_dev', pversion.public)
-            allow_overwrite = conf.get('overwrite_dev', True)
+            allow_overwrite = conf.getboolean('overwrite_dev', True)
         else:
             version = pversion.public
-            allow_overwrite = conf.get('overwrite_releases', False)
+            allow_overwrite = conf.getboolean('overwrite_releases', False)
 
     return version, allow_overwrite
 
@@ -158,7 +158,7 @@ def main(argv=None):
     # copy the content of ``args.deploy_from`` into the ``deploy_to`` directory
     shutil.copytree(args.deploy_from, str(deploy_to))
 
-    print("Deployed")
+    print("{} deployed to {}".format(args.deploy_from, deploy_to))
 
 
 if __name__ == "__main__":

@@ -58,7 +58,7 @@ a few reserved ones, described and commented in the following example
     overwrite_releases = False
     # when using the version number: if the version is a pre-release number
     # allow overwriting the target directory if exists; default True
-    overwrite_dev = True
+    overwrite_dev = yes
     # when using the version number: if the version is a pre-release number
     # and this option is given change the version name to the value of
     # ``version_dev``; WARNING: setting this option and ``overwrite_dev`` to
