@@ -51,9 +51,8 @@ a few reserved ones, described and commented in the following example
     # names are reserved
 
     # If present use it as the package name for the extraction of the version
-    # number, if the version is required. If not present the package name is
-    # assumed to be ``project``
-    pkg_name = 
+    # number, if the version is required. Default the section name
+    pkg_name = project
     # when using the version number: if the version is a release number allow
     # overwriting the target directory if exists; default False
     overwrite_releases = False
@@ -63,7 +62,7 @@ a few reserved ones, described and commented in the following example
     # when using the version number: if the version is a pre-release number
     # and this option is given change the version name to the value of
     # ``version_dev``; WARNING: setting this option and ``overwrite_dev`` to
-    # False can lead to unexpected results
+    # False can lead to unexpected results. Default to the actual version
     version_dev = development
 
     # types names
