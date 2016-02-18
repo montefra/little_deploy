@@ -66,17 +66,39 @@ def check_type(type_):
 
 def get_version(deploy_dir, conf):
     """Check if the deploy directory requires the version and deal with it
-    properly"""
+    properly
+
+    Parameters
+    ----------
+    deploy_dir : string
+        directory where the stuff meed to be deployed
+    conf : dict-like
+        configurations for the current project
+
+    Returns
+    -------
+    version : string
+        version number or None, if not required
+    allow_overwrite : bool
+        whether overwriting the deploy_dir, if existing, is allowed
+    """
     has_version = (('{version}' in deploy_dir) and
                    ('{{version}}' not in deploy_dir) and
                    ('${version}' not in deploy_dir))
     version = None
+    allow_overwrite = True
 
     if has_version:
         pkg_name = conf['pkg_name']
         pversion = pkg_resources.get_distribution(pkg_name).parsed_version
+        if pversion.is_prerelease or pversion.is_postrelease:
+            version = conf.get('version_dev', pversion.public)
+            allow_overwrite = conf.get('overwrite_dev', True)
+        else:
+            version = pversion.public
+            allow_overwrite = conf.get('overwrite_releases', False)
 
-    return version
+    return version, allow_overwrite
 
 
 def main(argv=None):
@@ -87,13 +109,13 @@ def main(argv=None):
     conf = ConfigParser(interpolation=ExtendedInterpolation())
     if not conf.read(os.path.expanduser(args.config_file)):
         print('Missing configuration file: deployment aborted')
-        exit()
+        sys.exit()
 
     try:
         conf_project = conf[args.project]
     except KeyError:
         print('Missing project "{}": deployment aborted'.format(args.project))
-        exit()
+        sys.exit()
 
     # if not already present, inject the package name into the configuration
     if 'pkg_name' not in conf_project:
@@ -103,24 +125,35 @@ def main(argv=None):
         deploy_to = conf_project[args.type]
     except KeyError:
         print('Missing type "{}": deployment aborted'.format(args.type))
-        exit()
+        sys.exit()
+
+    version, allow_overwrite = get_version(deploy_to, conf_project)
 
     try:
         deploy_to = pathlib.Path(deploy_to.format(name=args.project,
-                                                  type_=args.type))
-    except KeyError:
-        print("Error while substitute the project and type name")
-        exit()
+                                                  type_=args.type,
+                                                  version=version))
+    except KeyError as e:
+        print("Error while creating the target directory because of"
+              " {}".format(e))
+        sys.exit(1)
 
     if not deploy_to.exists():
         # do nothing
         pass
     elif deploy_to.is_dir():
-        # remove the directory
-        shutil.rmtree(str(deploy_to))
+        if allow_overwrite:
+            # remove the directory
+            shutil.rmtree(str(deploy_to))
+        else:
+            # print and exit
+            print("The directory '{}' already exists and I'm not allowed to"
+                  "  overwrite it".format(deploy_to))
+            sys.exit(1)
     else:
-        print("the target is not a directory")
-        sys.exit()
+        print("The target {} is not a directory, remove it manually or adapt"
+              " the configuration file".format(deploy_to))
+        sys.exit(1)
 
     # copy the content of ``args.deploy_from`` into the ``deploy_to`` directory
     shutil.copytree(args.deploy_from, str(deploy_to))
