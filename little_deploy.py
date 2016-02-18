@@ -148,7 +148,7 @@ def main(argv=None):
         else:
             # print and exit
             print("The directory '{}' already exists and I'm not allowed to"
-                  "  overwrite it".format(deploy_to))
+                  " overwrite it".format(deploy_to))
             sys.exit(1)
     else:
         print("The target {} is not a directory, remove it manually or adapt"
